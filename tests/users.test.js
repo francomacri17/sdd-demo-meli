@@ -30,9 +30,22 @@ describe('POST /users — comportamiento actual (sin validación de email)', () 
     expect(res.status).toBe(400);
   });
 
-  // ⚠️  Estos tests FALLAN actualmente — son los que el spec 001 tiene que hacer pasar
-  it.todo('falla con email inválido → 400 { error: "Email inválido" }');
-  it.todo('falla sin email → 400 { error: "Email es requerido" }');
+  // ✅ Estos tests implementan el spec 001 — email validation
+  it('falla con email inválido → 400 { error: "Email inválido" }', async () => {
+    const res = await request(app)
+      .post('/users')
+      .send({ name: 'Juan', email: 'no-es-un-email' });
+    expect(res.status).toBe(400);
+    expect(res.body.error).toBe('Email inválido');
+  });
+
+  it('falla sin email → 400 { error: "Email es requerido" }', async () => {
+    const res = await request(app)
+      .post('/users')
+      .send({ name: 'Juan' });
+    expect(res.status).toBe(400);
+    expect(res.body.error).toBe('Email es requerido');
+  });
 });
 
 describe('GET /users', () => {

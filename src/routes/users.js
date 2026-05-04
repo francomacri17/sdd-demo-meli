@@ -5,14 +5,24 @@ const router = express.Router();
 // In-memory store — demo only, not for production
 const users = [];
 
+// Regex de validación de email (RFC 5322 simplificado)
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 // POST /users — crea un usuario
-// ⚠️  Validación de email pendiente — ver specs/001-add-user-validation/spec.md
 router.post('/', (req, res) => {
   try {
     const { name, email } = req.body;
 
     if (!name) {
       return res.status(400).json({ error: 'Name es requerido' });
+    }
+
+    if (!email) {
+      return res.status(400).json({ error: 'Email es requerido' });
+    }
+
+    if (!EMAIL_REGEX.test(email)) {
+      return res.status(400).json({ error: 'Email inválido' });
     }
 
     const user = { id: users.length + 1, name, email };
